@@ -38,15 +38,6 @@ RUN \
   chmod +x /usr/local/bin/docker-entrypoint && \
   sed -i 's,\r,,g' /usr/local/bin/docker-entrypoint
 
-RUN \
-  for path in \
-    files \
-    logs \
-    query_ip_blacklist.txt \
-    query_ip_whitelist.txt \
-    ts3server.sqlitedb; \
-  do \
-    ln -vsf "/data/${path}" "/opt/teamspeak3/${path}"; \
-  done
-
+WORKDIR /data
+VOLUME /data
 ENTRYPOINT ["docker-entrypoint"]

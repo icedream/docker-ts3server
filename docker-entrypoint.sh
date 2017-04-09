@@ -2,17 +2,25 @@
 
 # files and directories that should exist beforehand
 mkdir -p \
-  /data/files \
-  /data/logs
+  files \
+  logs
 touch \
-  /data/query_ip_blacklist.txt \
-  /data/query_ip_whitelist.txt \
-  /data/ts3server.sqlitedb
+  query_ip_blacklist.txt \
+  query_ip_whitelist.txt \
+  ts3server.sqlitedb
 
-LD_LIBRARY_PATH="/opt/teamspeak3:${LD_LIBRARY_PATH}"
-export LD_LIBRARY_PATH
+for path in \
+  files \
+  logs \
+  query_ip_blacklist.txt \
+  query_ip_whitelist.txt \
+  ts3server.sqlitedb; \
+do \
+  ln -sf "$(pwd)/${path}" "/opt/teamspeak3/${path}"; \
+done
 
-/opt/teamspeak3/ts3server "$@" &
+cd /opt/teamspeak3
+LD_LIBRARY_PATH=".:${LD_LIBRARY_PATH}" /opt/teamspeak3/ts3server "$@" &
 TS3SERVER_PID=$!
 
 trap 'kill -2 ${TS3SERVER_PID}' INT
