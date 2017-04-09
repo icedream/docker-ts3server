@@ -34,7 +34,9 @@ RUN \
   apk --no-cache del .build-deps
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
+RUN \
+  chmod +x /usr/local/bin/docker-entrypoint && \
+  sed -i 's,\r,,g' /usr/local/bin/docker-entrypoint
 
 RUN \
   for path in \
