@@ -1,43 +1,81 @@
-FROM frolvlad/alpine-glibc:alpine-3.5_glibc-2.24
+FROM debian:9
 
-ARG TS3SERVER_URL="http://teamspeak.gameserver.gamed.de/ts3/releases/3.0.13.6/teamspeak3-server_linux_amd64-3.0.13.6.tar.bz2"
-ARG TS3SERVER_SHA384="c126cb43098c3ccd8f0eaaa871cc128ecda21261a1a862815ffc5bd6e8ed8dd45dff862a222ccfebe670a6dd5df4dfbb"
+ARG TS3SERVER_VERSION="3.0.13.8"
+ARG TS3SERVER_URL="http://teamspeak.gameserver.gamed.de/ts3/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
+#ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
+ARG TS3SERVER_SHA384="e064dea24c1d5d4a5b9ce51c40ca977ddb5018c82cedf1508b41810d535693979555d5ec38027c30de818f5219c42bdc"
+ARG TS3SERVER_TAR_ARGS="-j"
+ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
+# Add "app" user
+RUN mkdir -p /tmp/empty \
+	&& groupadd -g 9999 app \
+	&& useradd -d /data -l -N -g app -m -k /tmp/empty -u 9999 app \
+	&& rmdir /tmp/empty
+
+# Prepare data volume
+RUN mkdir -p /data && chown app:app /data
+WORKDIR /data
+
+# Set up server
 ADD ${TS3SERVER_URL} "/ts3server.tar.bz2"
 RUN \
-  apk --no-cache add --virtual .build-deps \
-    coreutils \
-    tar \
-    && \
+	export INITRD=no \
+	&& export DEBIAN_FRONTEND=noninteractive \
 \
-  echo "Validating checksum..." && \
-  TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" && \
-  if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then echo "Invalid checksum: ${TS3SERVER_ACTUAL_SHA384} != ${TS3SERVER_SHA384}" >&2; exit 1; fi && \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		tar \
+		bzip2 \
+		gzip \
+		xz-utils \
+	&& apt-mark auto \
+		tar \
+		bzip2 \
+		gzip \
+		xz-utils \
 \
-  mkdir -vp /opt/teamspeak3 && \
-  tar -v -C /opt/teamspeak3 -xf /ts3server.tar.bz2 --strip 1 && \
+	&& TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" \
+	&& if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then \
+		echo "Invalid checksum: ${TS3SERVER_ACTUAL_SHA384} != ${TS3SERVER_SHA384}" >&2; \
+		exit 1; \
+	fi \
 \
-  rm -vr \
-    /ts3server.tar.bz2 \
-    && \
-  rm -vrf \
-    /opt/teamspeak3/*.sh \
-    /opt/teamspeak3/CHANGELOG \
-    /opt/teamspeak3/doc \
-    /opt/teamspeak3/redist \
-    /opt/teamspeak3/serverquerydocs \
-    /opt/teamspeak3/tsdns \
-    /tmp/* \
-    /var/tmp/* \
-    && \
-  ls -lAh /opt/teamspeak3 && \
-  apk --no-cache del .build-deps
+	&& mkdir -vp "${TS3SERVER_INSTALL_DIR}" \
+	&& tar -v -C "${TS3SERVER_INSTALL_DIR}" -xf /ts3server.tar.bz2 --strip 1 \
+		${TS3SERVER_TAR_ARGS} teamspeak3-server_linux_amd64/ \
+	&& rm -vr \
+		/ts3server.tar.bz2 \
+		"${TS3SERVER_INSTALL_DIR}"/*.sh \
+		"${TS3SERVER_INSTALL_DIR}"/CHANGELOG \
+		"${TS3SERVER_INSTALL_DIR}"/doc \
+		"${TS3SERVER_INSTALL_DIR}"/redist \
+		"${TS3SERVER_INSTALL_DIR}"/serverquerydocs \
+		"${TS3SERVER_INSTALL_DIR}"/tsdns \
+	&& chown -v root:root -R "${TS3SERVER_INSTALL_DIR}" \
+	&& chmod -v g-w,o-w -R "${TS3SERVER_INSTALL_DIR}" \
+\
+	&& ln -vs ${TS3SERVER_INSTALL_DIR}/ts3server /usr/local/bin/ts3server \
+\
+	&& apt-get autoremove -y --purge \
+	&& apt-get clean \
+	&& rm -vfr \
+		/tmp/* \
+		/var/tmp/* \
+		/var/lib/apt/lists/*
 
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+# Healthcheck
+COPY healthcheck.sh /usr/local/bin/ts3server-healthcheck
 RUN \
-  chmod +x /usr/local/bin/docker-entrypoint && \
-  sed -i 's,\r,,g' /usr/local/bin/docker-entrypoint
+	chmod +x /usr/local/bin/ts3server-healthcheck \
+	&& sed -i 's,\r,,g' /usr/local/bin/ts3server-healthcheck
+HEALTHCHECK --interval=30s --timeout=3s \
+	CMD ts3server-healthcheck
 
-WORKDIR /data
-VOLUME /data
-ENTRYPOINT ["docker-entrypoint"]
+# Prepare runtime
+ENV LD_LIBRARY_PATH ${TS3SERVER_INSTALL_DIR}
+USER app
+# Can't use $TS3SERVER_INSTALL_DIR here because ENTRYPOINT does not accept variables
+ENTRYPOINT [ "ts3server", "dbsqlpath=/opt/ts3server/sql/", "query_ip_whitelist=/data/query_ip_whitelist.txt", "query_ip_blacklist=/data/query_ip_blacklist.txt", "createinifile=1" ]
+
+EXPOSE 9987/udp 10011 30033 41144
