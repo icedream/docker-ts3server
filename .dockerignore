@@ -3,4 +3,5 @@
 .git*
 
 Dockerfile
+*.Dockerfile
 .dockerignore
