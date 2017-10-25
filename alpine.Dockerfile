@@ -20,7 +20,9 @@ WORKDIR /data
 # Set up server
 ADD ${TS3SERVER_URL} "/ts3server.tar.bz2"
 RUN \
-	apk --no-cache add --virtual .build-deps \
+	apk --no-cache add \
+		tzdata \
+	&& apk --no-cache add --virtual .build-deps \
 		coreutils \
 		tar \
 		bzip2 \
