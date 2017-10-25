@@ -21,11 +21,14 @@ WORKDIR /data
 ADD ${TS3SERVER_URL} "/ts3server.tar.bz2"
 RUN \
 	apk --no-cache add --virtual .build-deps \
+		mariadb-libs \
 		coreutils \
 		tar \
 		bzip2 \
 		gzip \
 		xz \
+\
+	&& ln -v -s /usr/lib/libmysqlclient.so.* /usr/lib/libmariadb.so \
 \
 	&& TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" \
 	&& if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then \

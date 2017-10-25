@@ -25,6 +25,7 @@ RUN \
 \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
+		libmariadb2 \
 		tar \
 		bzip2 \
 		gzip \
