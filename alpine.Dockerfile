@@ -68,8 +68,9 @@ HEALTHCHECK --interval=30s --timeout=3s \
 
 # Prepare runtime
 ENV LD_LIBRARY_PATH ${TS3SERVER_INSTALL_DIR}
+COPY entrypoint.sh /usr/local/bin/ts3server-docker
 USER app
 # Can't use $TS3SERVER_INSTALL_DIR here because ENTRYPOINT does not accept variables
-ENTRYPOINT [ "ts3server", "dbsqlpath=/opt/ts3server/sql/", "query_ip_whitelist=/data/query_ip_whitelist.txt", "query_ip_blacklist=/data/query_ip_blacklist.txt", "createinifile=1" ]
+ENTRYPOINT [ "ts3server-docker", "dbsqlpath=/opt/ts3server/sql/", "query_ip_whitelist=/data/query_ip_whitelist.txt", "query_ip_blacklist=/data/query_ip_blacklist.txt", "createinifile=1" ]
 
 EXPOSE 9987/udp 10011 30033 41144
