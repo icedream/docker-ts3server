@@ -28,7 +28,7 @@ RUN \
 		gzip \
 		xz \
 \
-	&& ln -v -s /usr/lib/libmysqlclient.so.* /usr/lib/libmariadb.so \
+	&& ln -v -s /usr/lib/libmysqld.so.18 /usr/lib/libmariadb.so.2 \
 \
 	&& TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" \
 	&& if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then \
