@@ -20,16 +20,12 @@ WORKDIR /data
 # Set up server
 ADD ${TS3SERVER_URL} "/ts3server.tar.bz2"
 RUN \
-	apk --no-cache add \
-		mariadb-libs \
-	&& apk --no-cache add --virtual .build-deps \
+	apk --no-cache add --virtual .build-deps \
 		coreutils \
 		tar \
 		bzip2 \
 		gzip \
 		xz \
-\
-	&& ln -v -s /usr/lib/libmysqld.so.18 /usr/lib/libmariadb.so.2 \
 \
 	&& TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" \
 	&& if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then \
@@ -40,6 +36,7 @@ RUN \
 	&& mkdir -vp "${TS3SERVER_INSTALL_DIR}" \
 	&& tar -v -C "${TS3SERVER_INSTALL_DIR}" -xf /ts3server.tar.bz2 --strip 1 \
 		${TS3SERVER_TAR_ARGS} teamspeak3-server_linux_amd64/ \
+	&& mv -v "${TS3SERVER_INSTALL_DIR}"/redist/libmariadb*.so "${TS3SERVER_INSTALL_DIR}" \
 	&& rm -vfr \
 		/ts3server.tar.bz2 \
 		"${TS3SERVER_INSTALL_DIR}"/*.sh \
