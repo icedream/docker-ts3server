@@ -41,9 +41,11 @@ services:
     #  # otherwise.
     #  #dockerfile: alpine.Dockerfile
     #  
+    #  # You can set any of the build arguments
     #  args:
     #    TS3SERVER_VERSION: 3.0.13.8
     #    TS3SERVER_SHA384: <sha384 sum of the version you want to build for>
+    #    TS3SERVER_URL: <direct URL to a mirror of the TeamSpeak3 version>
     #    # ...
 
     volumes:
