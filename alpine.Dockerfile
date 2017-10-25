@@ -36,7 +36,7 @@ RUN \
 	&& mkdir -vp "${TS3SERVER_INSTALL_DIR}" \
 	&& tar -v -C "${TS3SERVER_INSTALL_DIR}" -xf /ts3server.tar.bz2 --strip 1 \
 		${TS3SERVER_TAR_ARGS} teamspeak3-server_linux_amd64/ \
-	&& mv -v "${TS3SERVER_INSTALL_DIR}"/redist/libmariadb*.so "${TS3SERVER_INSTALL_DIR}" \
+	&& mv -v "${TS3SERVER_INSTALL_DIR}"/redist/libmariadb*.so* "${TS3SERVER_INSTALL_DIR}" \
 	&& rm -vfr \
 		/ts3server.tar.bz2 \
 		"${TS3SERVER_INSTALL_DIR}"/*.sh \
