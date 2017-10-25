@@ -1,12 +1,5 @@
 FROM debian:9
 
-ARG TS3SERVER_VERSION="3.0.13.8"
-ARG TS3SERVER_URL="http://teamspeak.gameserver.gamed.de/ts3/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
-#ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
-ARG TS3SERVER_SHA384="e064dea24c1d5d4a5b9ce51c40ca977ddb5018c82cedf1508b41810d535693979555d5ec38027c30de818f5219c42bdc"
-ARG TS3SERVER_TAR_ARGS="-j"
-ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
-
 # Add "app" user
 RUN mkdir -p /tmp/empty \
 	&& groupadd -g 9999 app \
@@ -16,6 +9,13 @@ RUN mkdir -p /tmp/empty \
 # Prepare data volume
 RUN mkdir -p /data && chown app:app /data
 WORKDIR /data
+
+ARG TS3SERVER_VERSION="3.0.13.8"
+ARG TS3SERVER_URL="http://teamspeak.gameserver.gamed.de/ts3/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
+#ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
+ARG TS3SERVER_SHA384="e064dea24c1d5d4a5b9ce51c40ca977ddb5018c82cedf1508b41810d535693979555d5ec38027c30de818f5219c42bdc"
+ARG TS3SERVER_TAR_ARGS="-j"
+ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
 # Set up server
 ADD ${TS3SERVER_URL} "/ts3server.tar.bz2"
