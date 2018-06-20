@@ -9,12 +9,17 @@ logs from a volume folder at `/data`. The respective parameters are defined as
 part of the entrypoint. When defining **custom parameters**, you should expand
 on these parameters by specifying them as __command__, not as __entrypoint__.
 
+You will have to agree to the TeamSpeak3 server license by either setting the
+environment variable `TS3SERVER_LICENSE` to `accept` (you can also set it
+to `view` to view it) or by passing the command line parameter `license_accepted=1`.
+
 ### Directly
 
 You can run this image directly like this:
 
 ```sh
 docker run --name teamspeak3-server \
+  -e TS3SERVER_LICENSE=accept \
   -v /path/to/ts3/data:/data:Z
   icedream/ts3server
 ```
@@ -58,6 +63,7 @@ services:
     
     environment:
       TZ: Europe/Berlin # set timezone
+      TS3SERVER_LICENSE: accept # accept server license
 
     # Define custom parameters for the server here. Especially useful for
     # automatic first-time setup.

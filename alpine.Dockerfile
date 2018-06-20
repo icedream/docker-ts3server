@@ -10,10 +10,10 @@ RUN mkdir -p /tmp/empty \
 RUN mkdir -p /data && chown app:app /data
 WORKDIR /data
 
-ARG TS3SERVER_VERSION="3.0.13.8"
+ARG TS3SERVER_VERSION="3.1.0"
 ARG TS3SERVER_URL="http://teamspeak.gameserver.gamed.de/ts3/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
 #ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
-ARG TS3SERVER_SHA384="e064dea24c1d5d4a5b9ce51c40ca977ddb5018c82cedf1508b41810d535693979555d5ec38027c30de818f5219c42bdc"
+ARG TS3SERVER_SHA384="8f9c14f45135fd1bfabd373d69465c9e34e7f5f81301e3ddc669e552143ddc4ad6da941dbd919d5760fe6b1df11b2960"
 ARG TS3SERVER_TAR_ARGS="-j"
 ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
@@ -23,6 +23,7 @@ RUN \
 	apk --no-cache add \
 		bash \
 		tzdata \
+		ca-certificates \
 	&& apk --no-cache add --virtual .build-deps \
 		coreutils \
 		tar \
