@@ -10,11 +10,11 @@ RUN mkdir -p /tmp/empty \
 RUN mkdir -p /data && chown app:app /data
 WORKDIR /data
 
-ARG TS3SERVER_VERSION="3.1.3"
+ARG TS3SERVER_VERSION="3.2.0"
 ARG TS3SERVER_VARIANT="alpine"
 ARG TS3SERVER_URL="http://teamspeak.gameserver.gamed.de/ts3/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
 #ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
-ARG TS3SERVER_SHA384="16ea24594050feef560def77ffa7f8825c7d2ecbfb467a67ba761de1f2e5923676d2fb3c0feddd66d7a5f6174b840090"
+ARG TS3SERVER_SHA384="456bfccde8f0db354c4eaf21d0bf17c96fa5676b844881c770bdfa05fde0b98e03ac7c3b47c1e21ecd001cd35426ca04"
 ARG TS3SERVER_TAR_ARGS="-j"
 ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
