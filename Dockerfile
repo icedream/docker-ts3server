@@ -65,14 +65,6 @@ RUN \
 		/var/tmp/* \
 		/var/lib/apt/lists/*
 
-# Healthcheck
-COPY healthcheck.sh /usr/local/bin/ts3server-healthcheck
-RUN \
-	chmod +x /usr/local/bin/ts3server-healthcheck \
-	&& sed -i 's,\r,,g' /usr/local/bin/ts3server-healthcheck
-HEALTHCHECK --interval=30s --timeout=3s \
-	CMD ts3server-healthcheck
-
 # Prepare runtime
 ENV LD_LIBRARY_PATH ${TS3SERVER_INSTALL_DIR}
 USER app
