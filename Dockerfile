@@ -69,6 +69,6 @@ RUN \
 ENV LD_LIBRARY_PATH ${TS3SERVER_INSTALL_DIR}
 USER app
 # Can't use $TS3SERVER_INSTALL_DIR here because ENTRYPOINT does not accept variables
-ENTRYPOINT [ "ts3server", "dbsqlpath=/opt/ts3server/sql/", "query_ip_whitelist=/data/query_ip_whitelist.txt", "query_ip_blacklist=/data/query_ip_blacklist.txt", "createinifile=1" ]
+ENTRYPOINT [ "ts3server", "dbsqlpath=/opt/ts3server/sql/", "serverquerydocs_path=/opt/ts3server/serverquerydocs/", "query_ip_whitelist=/data/query_ip_whitelist.txt", "query_ip_blacklist=/data/query_ip_blacklist.txt", "createinifile=1" ]
 
 EXPOSE 9987/udp 10011 30033 41144
