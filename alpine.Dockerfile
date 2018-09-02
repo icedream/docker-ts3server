@@ -49,7 +49,6 @@ RUN \
 		"${TS3SERVER_INSTALL_DIR}"/CHANGELOG \
 		"${TS3SERVER_INSTALL_DIR}"/doc \
 		"${TS3SERVER_INSTALL_DIR}"/redist \
-		"${TS3SERVER_INSTALL_DIR}"/serverquerydocs \
 		"${TS3SERVER_INSTALL_DIR}"/tsdns \
 	&& chown -v root:root -R "${TS3SERVER_INSTALL_DIR}" \
 	&& chmod -v g-w,o-w -R "${TS3SERVER_INSTALL_DIR}" \
