@@ -10,10 +10,11 @@ RUN mkdir -p /tmp/empty \
 RUN mkdir -p /data && chown app:app /data
 WORKDIR /data
 
-ARG TS3SERVER_VERSION="3.3.1"
+ARG TS3SERVER_VERSION="3.4.0"
 ARG TS3SERVER_URL="http://teamspeak.gameserver.gamed.de/ts3/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
 #ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_amd64-${TS3SERVER_VERSION}.tar.bz2"
-ARG TS3SERVER_SHA384="718f303623605e492507bcee51a8717b8ecff3f773542550437b1bb974fa3da36aaeee17d0ad5d74b721f6fe61368caf"
+ARG TS3SERVER_SHA256="7d6ec8e97d4a9e9913a7e01f2e7f5f9fddfdc41b11e668d013a0f4b574d1918b"
+ARG TS3SERVER_SHA384=""
 ARG TS3SERVER_TAR_ARGS="-j"
 ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
@@ -37,11 +38,24 @@ RUN \
 		gzip \
 		xz-utils \
 \
-	&& TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" \
-	&& if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then \
-		echo "Invalid checksum: ${TS3SERVER_ACTUAL_SHA384} != ${TS3SERVER_SHA384}" >&2; \
-		exit 1; \
-	fi \
+	&& ( \
+		[ ! -z "${TS3SERVER_SHA384}" ] \
+		&& TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" \
+		&& if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then \
+			echo "Invalid checksum: ${TS3SERVER_ACTUAL_SHA384} != ${TS3SERVER_SHA384}" >&2; \
+			exit 1; \
+		fi \
+	) || ( \
+		[ ! -z "${TS3SERVER_SHA256}" ] \
+		&& TS3SERVER_ACTUAL_SHA256="$(sha256sum /ts3server.tar.bz2 | awk '{print $1}')" \
+		&& if [ "${TS3SERVER_ACTUAL_SHA256}" != "${TS3SERVER_SHA256}" ]; then \
+			echo "Invalid checksum: ${TS3SERVER_ACTUAL_SHA256} != ${TS3SERVER_SHA256}" >&2; \
+			exit 1; \
+		fi \
+	) || ( \
+		echo "No hash configured!" \
+		&& exit 1 \
+	) \
 \
 	&& mkdir -vp "${TS3SERVER_INSTALL_DIR}" \
 	&& tar -v -C "${TS3SERVER_INSTALL_DIR}" -xf /ts3server.tar.bz2 --strip 1 \
