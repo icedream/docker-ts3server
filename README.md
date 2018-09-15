@@ -82,6 +82,20 @@ solutions:
 1. `chown 9999:9999 /path/to/ts3/data`
 2. `chmod 777 /path/to/ts3/data`
 
+### Note on SHA256 vs SHA384
+
+For easier maintenance and for the purpose of using an official source, this
+image switched from checking using SHA384 hashes to checking with SHA256
+hashes provided by the TeamSpeak website. Originally, SHA384 hashes were used
+for increased security.
+
+If you are migrating from an earlier version of the image and are using the
+`TS3SERVER_SHA384` build argument, it will still work but I strongly recommend
+using `TS3SERVER_SHA256`, ideally with the hashes provided by TeamSpeak on their
+official Downloads web page.
+
+There are currently no plans to remove the SHA384 checking code.
+
 ## MySQL/MariaDB
 
 To make TeamSpeak3 store its SQL data to a MySQL or MariaDB instance, you need
