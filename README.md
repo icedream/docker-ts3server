@@ -90,8 +90,9 @@ hashes provided by the TeamSpeak website. Originally, SHA384 hashes were used
 for increased security.
 
 If you are migrating from an earlier version of the image and are using the
-`TS3SERVER_SHA384` build argument, it will still work but I strongly recommend
-using `TS3SERVER_SHA256`, ideally with the hashes provided by TeamSpeak on their
+`TS3SERVER_SHA384` build argument, it will still work and take precedence over
+any given `TS3SERVER_SHA256` hash but I strongly recommend using
+`TS3SERVER_SHA256`, ideally with the hashes provided by TeamSpeak on their
 official Downloads web page.
 
 There are currently no plans to remove the SHA384 checking code.
