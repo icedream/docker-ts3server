@@ -60,7 +60,7 @@ services:
     ports:
       - "9987-9999:9987-9999/udp" # voice/virtual server UDP ports
       - "10011:10011" # query TCP port
-      - "30011:30011" # file transfer TCP port
+      - "30033:30033" # file transfer TCP port
     
     environment:
       TZ: Europe/Berlin # set timezone
