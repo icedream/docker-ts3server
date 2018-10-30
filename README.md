@@ -29,7 +29,7 @@ docker run --name teamspeak3-server \
 Here is an example configuration for `docker-compose`:
 
 ```yaml
-version: "3.3"
+version: "3.7"
 
 volumes:
   ts3server_data:
