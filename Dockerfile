@@ -10,12 +10,12 @@ RUN mkdir -p /tmp/empty \
 RUN mkdir -p /data && chown app:app /data
 WORKDIR /data
 
-ARG TS3SERVER_VERSION="3.5.1"
+ARG TS3SERVER_VERSION="3.6.0"
 # Possible values are alpine, amd64, x86
 ARG TS3SERVER_VARIANT="amd64"
 ARG TS3SERVER_URL="https://files.teamspeak-services.com/releases/server/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
 #ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
-ARG TS3SERVER_SHA256="aa991a7b88f4d6e24867a98548b808c093771b85443f986c8adb09e78e41eb79"
+ARG TS3SERVER_SHA256="5a0ed8229c0c8f071b85b1ac02a7176562b6386dae66babfaa553d5da26386be"
 ARG TS3SERVER_SHA384=""
 ARG TS3SERVER_TAR_ARGS="-j"
 ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
@@ -81,8 +81,6 @@ RUN \
 		/var/tmp/* \
 		/var/lib/apt/lists/*
 
-# Prepare runtime
-ENV LD_LIBRARY_PATH ${TS3SERVER_INSTALL_DIR}
 USER app
 # Can't use $TS3SERVER_INSTALL_DIR here because ENTRYPOINT does not accept variables
 ENTRYPOINT [ "ts3server", "dbsqlpath=/opt/ts3server/sql/", "serverquerydocs_path=/opt/ts3server/serverquerydocs/", "query_ip_whitelist=/data/query_ip_whitelist.txt", "query_ip_blacklist=/data/query_ip_blacklist.txt", "createinifile=1" ]
