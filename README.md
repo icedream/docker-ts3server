@@ -48,9 +48,8 @@ services:
     #  
     #  # You can set any of the build arguments
     #  args:
-    #    TS3SERVER_VERSION: 3.3.0
+    #    TS3SERVER_VERSION: 3.8.0
     #    TS3SERVER_SHA256: <sha256 sum of the version you want to build for>
-    #    TS3SERVER_SHA384: <sha384 sum of the version you want to build for - provided for backwards compatibility>
     #    TS3SERVER_URL: <direct URL to a mirror of the TeamSpeak3 version>
     #    # ...
 
@@ -81,21 +80,6 @@ solutions:
 
 1. `chown 9999:9999 /path/to/ts3/data`
 2. `chmod 777 /path/to/ts3/data`
-
-### Note on SHA256 vs SHA384
-
-For easier maintenance and for the purpose of using an official source, this
-image switched from checking using SHA384 hashes to checking with SHA256
-hashes provided by the TeamSpeak website. Originally, SHA384 hashes were used
-for increased security.
-
-If you are migrating from an earlier version of the image and are using the
-`TS3SERVER_SHA384` build argument, it will still work and take precedence over
-any given `TS3SERVER_SHA256` hash but I strongly recommend using
-`TS3SERVER_SHA256`, ideally with the hashes provided by TeamSpeak on their
-official Downloads web page.
-
-There are currently no plans to remove the SHA384 checking code.
 
 ## MySQL/MariaDB
 

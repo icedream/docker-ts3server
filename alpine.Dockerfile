@@ -14,9 +14,7 @@ ARG TS3SERVER_VERSION="3.8.0"
 # Possible values are alpine, amd64, x86
 ARG TS3SERVER_VARIANT="alpine"
 ARG TS3SERVER_URL="https://files.teamspeak-services.com/releases/server/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
-#ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
 ARG TS3SERVER_SHA256="4782b19514abecdaefe498fced970bf9ae74f7d9699c5b60960f422add8dbb50"
-ARG TS3SERVER_SHA384=""
 ARG TS3SERVER_TAR_ARGS="-j"
 ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
@@ -36,13 +34,6 @@ RUN \
 		xz \
 \
 	&& ( \
-		[ ! -z "${TS3SERVER_SHA384}" ] \
-		&& TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" \
-		&& if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then \
-			echo "Invalid checksum: ${TS3SERVER_ACTUAL_SHA384} != ${TS3SERVER_SHA384}" >&2; \
-			exit 1; \
-		fi \
-	) || ( \
 		[ ! -z "${TS3SERVER_SHA256}" ] \
 		&& TS3SERVER_ACTUAL_SHA256="$(sha256sum /ts3server.tar.bz2 | awk '{print $1}')" \
 		&& if [ "${TS3SERVER_ACTUAL_SHA256}" != "${TS3SERVER_SHA256}" ]; then \
