@@ -45,12 +45,11 @@ services:
     #  # Uncomment to use Alpine image variant. Builds Debian image variant
     #  # otherwise.
     #  #dockerfile: alpine.Dockerfile
-    #  
+    #
     #  # You can set any of the build arguments
     #  args:
     #    TS3SERVER_VERSION: 3.3.0
     #    TS3SERVER_SHA256: <sha256 sum of the version you want to build for>
-    #    TS3SERVER_SHA384: <sha384 sum of the version you want to build for - provided for backwards compatibility>
     #    TS3SERVER_URL: <direct URL to a mirror of the TeamSpeak3 version>
     #    # ...
 
@@ -61,7 +60,7 @@ services:
       - "9987-9999:9987-9999/udp" # voice/virtual server UDP ports
       - "10011:10011" # query TCP port
       - "30033:30033" # file transfer TCP port
-    
+
     environment:
       TZ: Europe/Berlin # set timezone
       TS3SERVER_LICENSE: accept # accept server license
@@ -95,7 +94,8 @@ any given `TS3SERVER_SHA256` hash but I strongly recommend using
 `TS3SERVER_SHA256`, ideally with the hashes provided by TeamSpeak on their
 official Downloads web page.
 
-There are currently no plans to remove the SHA384 checking code.
+Support for SHA384 hashes will be removed once support for TeamSpeak3 version
+3.10 is added.
 
 ## MySQL/MariaDB
 
