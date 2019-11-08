@@ -28,7 +28,7 @@ RUN \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		ca-certificates \
-		libmariadb2 \
+		libmariadb3 \
 		tar \
 		bzip2 \
 		gzip \
