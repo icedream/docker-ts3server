@@ -1,4 +1,4 @@
-FROM debian:9
+FROM debian:10
 
 # Add "app" user
 RUN mkdir -p /tmp/empty \
@@ -10,13 +10,12 @@ RUN mkdir -p /tmp/empty \
 RUN mkdir -p /data && chown app:app /data
 WORKDIR /data
 
-ARG TS3SERVER_VERSION="3.9.1"
+ARG TS3SERVER_VERSION="3.10.0"
 # Possible values are alpine, amd64, x86
 ARG TS3SERVER_VARIANT="amd64"
 ARG TS3SERVER_URL="https://files.teamspeak-services.com/releases/server/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
 #ARG TS3SERVER_URL="http://dl.4players.de/ts/releases/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
-ARG TS3SERVER_SHA256="0a0497d6a8e5f3f48e10db8f89875286d6aa3388f171f828cf5d426cf305f16f"
-ARG TS3SERVER_SHA384=""
+ARG TS3SERVER_SHA256="5d0ade1cc3802cae75cf2b1d22b14163154a0d1d77d5aded7e56c826d023d6dd"
 ARG TS3SERVER_TAR_ARGS="-j"
 ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
@@ -29,7 +28,7 @@ RUN \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		ca-certificates \
-		libmariadb2 \
+		libmariadb3 \
 		tar \
 		bzip2 \
 		gzip \
@@ -41,13 +40,6 @@ RUN \
 		xz-utils \
 \
 	&& ( \
-		[ ! -z "${TS3SERVER_SHA384}" ] \
-		&& TS3SERVER_ACTUAL_SHA384="$(sha384sum /ts3server.tar.bz2 | awk '{print $1}')" \
-		&& if [ "${TS3SERVER_ACTUAL_SHA384}" != "${TS3SERVER_SHA384}" ]; then \
-			echo "Invalid checksum: ${TS3SERVER_ACTUAL_SHA384} != ${TS3SERVER_SHA384}" >&2; \
-			exit 1; \
-		fi \
-	) || ( \
 		[ ! -z "${TS3SERVER_SHA256}" ] \
 		&& TS3SERVER_ACTUAL_SHA256="$(sha256sum /ts3server.tar.bz2 | awk '{print $1}')" \
 		&& if [ "${TS3SERVER_ACTUAL_SHA256}" != "${TS3SERVER_SHA256}" ]; then \
