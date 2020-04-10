@@ -1,0 +1,3 @@
+# the actual build script should not be part of git, we don't want to leak
+# where we put the image in our private registry
+build.sh
