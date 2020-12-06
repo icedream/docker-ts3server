@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM alpine:3.12
 
 # Add "app" user
 RUN mkdir -p /tmp/empty \
@@ -10,11 +10,11 @@ RUN mkdir -p /tmp/empty \
 RUN mkdir -p /data && chown app:app /data
 WORKDIR /data
 
-ARG TS3SERVER_VERSION="3.12.1"
+ARG TS3SERVER_VERSION="3.13.0"
 # Possible values are alpine, amd64, x86
 ARG TS3SERVER_VARIANT="alpine"
 ARG TS3SERVER_URL="https://files.teamspeak-services.com/releases/server/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
-ARG TS3SERVER_SHA256="b1d5876854992bf9f5d7bc6b12be71bee9bfe90185b78c74bc50ed5a02f360a2"
+ARG TS3SERVER_SHA256="8a951c07ded91d412d5d2bbcbc6cc210cdd6c52bad0ba5a9bae69d3569ea6ccb"
 ARG TS3SERVER_TAR_ARGS="-j"
 ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
@@ -69,6 +69,6 @@ RUN \
 
 USER app
 # Can't use $TS3SERVER_INSTALL_DIR here because ENTRYPOINT does not accept variables
-ENTRYPOINT [ "ts3server", "dbsqlpath=/opt/ts3server/sql/", "serverquerydocs_path=/opt/ts3server/serverquerydocs/", "query_ip_whitelist=/data/query_ip_whitelist.txt", "query_ip_blacklist=/data/query_ip_blacklist.txt", "createinifile=1" ]
+ENTRYPOINT [ "ts3server", "dbsqlpath=/opt/ts3server/sql/", "serverquerydocs_path=/opt/ts3server/serverquerydocs/", "query_ip_allowlist=/data/query_ip_allowlist.txt", "query_ip_denylist=/data/query_ip_denylist.txt", "createinifile=1" ]
 
 EXPOSE 9987/udp 10011 10022 10080 10443 30033 41144
