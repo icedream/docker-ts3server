@@ -1,3 +1,10 @@
+FROM busybox
+
+COPY *.sh /target/usr/local/bin/
+RUN chmod +x /target/usr/local/bin/*
+
+###
+
 FROM debian:10
 
 # Add "app" user
@@ -16,7 +23,7 @@ ARG TS3SERVER_VARIANT="amd64"
 ARG TS3SERVER_URL="https://files.teamspeak-services.com/releases/server/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
 ARG TS3SERVER_SHA256="64cef96f0254645a231aab3443e4e9216862733fcad52793dba1e170e8fcd7e9"
 ARG TS3SERVER_TAR_ARGS="-j"
-ARG TS3SERVER_INSTALL_DIR="/opt/ts3server"
+ENV TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
 # Set up server
 ADD ${TS3SERVER_URL} "/ts3server.tar.bz2"
@@ -72,8 +79,9 @@ RUN \
 		/var/tmp/* \
 		/var/lib/apt/lists/*
 
+COPY --from=0 /target/ /
+
 USER app
-# Can't use $TS3SERVER_INSTALL_DIR here because ENTRYPOINT does not accept variables
-ENTRYPOINT [ "ts3server", "dbsqlpath=/opt/ts3server/sql/", "serverquerydocs_path=/opt/ts3server/serverquerydocs/", "query_ip_allowlist=/data/query_ip_allowlist.txt", "query_ip_denylist=/data/query_ip_denylist.txt", "createinifile=1" ]
+ENTRYPOINT [ "docker-ts3server-entrypoint.sh" ]
 
 EXPOSE 9987/udp 10011 10022 10080 10443 30033 41144
