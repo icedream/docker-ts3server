@@ -17,11 +17,11 @@ RUN mkdir -p /tmp/empty \
 RUN mkdir -p /data && chown app:app /data
 WORKDIR /data
 
-ARG TS3SERVER_VERSION="3.13.2"
+ARG TS3SERVER_VERSION="3.13.3"
 # Possible values are alpine, amd64, x86
 ARG TS3SERVER_VARIANT="amd64"
 ARG TS3SERVER_URL="https://files.teamspeak-services.com/releases/server/${TS3SERVER_VERSION}/teamspeak3-server_linux_${TS3SERVER_VARIANT}-${TS3SERVER_VERSION}.tar.bz2"
-ARG TS3SERVER_SHA256="ffb6c8cc222228eaaed79930ebd39fbf2f8a6d557d1a67d7eafc5e7e8c4931d1"
+ARG TS3SERVER_SHA256="f9bf52d1e9109971792b0bd57261c80e9a7489944ed96d65b3c798843ce3514c"
 ARG TS3SERVER_TAR_ARGS="-j"
 ENV TS3SERVER_INSTALL_DIR="/opt/ts3server"
 
