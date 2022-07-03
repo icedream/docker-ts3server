@@ -2,5 +2,15 @@
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": [
 		"config:base"
-	]
+	],
+	"postUpgradeTasks": {
+		"commands": [
+			".renovate/update-checksum.sh"
+		],
+		"fileFilters": [
+			"Dockerfile",
+			"*.Dockerfile"
+		],
+		"executionMode": "update"
+	},
 }
