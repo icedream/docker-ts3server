@@ -10,7 +10,8 @@
 				"(^|/)Dockerfile[^/]*$"
 			],
 			"matchStrings": [
-				"^(ARG|ENV)\\s+TS3SERVER_VERSION=['\"]?(?<currentValue>.+?)['\"]?\\s*$"
+				"^(ARG|ENV)\\s+TS3SERVER_VERSION=\"(?<currentValue>.+?)\"",
+				"^(ARG|ENV)\\s+TS3SERVER_VERSION='(?<currentValue>.+?)'"
 			],
 			"depNameTemplate": "teamspeak3-server",
 			"packageNameTemplate": "nix_unstable/teamspeak-server",
