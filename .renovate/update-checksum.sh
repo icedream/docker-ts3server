@@ -67,7 +67,7 @@ update_checksum_for_dockerfile() {
 	new_ts3server_url="$(jq -r '.mirrors | to_entries | .[] | .value' <<<"$new_ts3server_version_json" | head -n1)"
 
 	if [ "$new_ts3server_version" != "$ts3server_version" ]; then
-		echo "ERROR: Newest version mismatches version in Dockerfile." >&2
+		echo "WARNING: Newest version in remote JSON mismatches version in Dockerfile." >&2
 	fi
 
 	# derive platform-specific download url from x86_64 provided one
