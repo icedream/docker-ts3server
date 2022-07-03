@@ -3,6 +3,20 @@
 	"extends": [
 		"config:base"
 	],
+	"regexManagers": [
+		{
+			"fileMatch": [
+				"(^|/|\\.)Dockerfile$",
+				"(^|/)Dockerfile[^/]*$"
+			],
+			"matchStrings": [
+				"TS3SERVER_VERSION=['\"]?(?<currentValue>.+?)['\"]?"
+			],
+			"depNameTemplate": "teamspeak3-server",
+			"packageNameTemplate": "nix_unstable/teamspeak-server",
+			"datasourceTemplate": "repology"
+		}
+	],
 	"postUpgradeTasks": {
 		"commands": [
 			".renovate/update-checksum.sh"
