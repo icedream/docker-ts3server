@@ -5,3 +5,5 @@
 Dockerfile
 *.Dockerfile
 .dockerignore
+
+renovate*.json*
