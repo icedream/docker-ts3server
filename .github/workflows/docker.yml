@@ -50,7 +50,7 @@ jobs:
             # tag event
             type=ref,event=tag
           images: |
-            ghcr.io/${{ github.repository }}
+            ghcr.io/${{ github.repository_owner }}/ts3server
             icedream/ts3server
       -
         name: Build and push
