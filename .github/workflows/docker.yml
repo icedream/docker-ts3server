@@ -5,7 +5,7 @@ on:
     inputs:
       is_default_flavor:
         required: false
-        type: bool
+        type: boolean
         description: |
           Whether this flavor becomes the default. Suffixless tags will be
           added if set to true.
