@@ -54,14 +54,14 @@ jobs:
         with:
           tags: |
             # branch event
-            type=ref,event=branch,enable={{is_default_flavor}}
-            type=ref,event=branch,suffix={{suffix}}
+            type=ref,event=branch,enable=${{inputs.is_default_flavor}}
+            type=ref,event=branch,suffix=${{inputs.suffix}}
             # set latest tag for main branch
             type=raw,value=latest,enable=${{ format('refs/heads/{0}', github.event.repository.default_branch) == github.ref && is_default_flavor }}
-            type=raw,value=latest,suffix={{suffix}},enable={{is_default_branch}}
+            type=raw,value=latest,suffix=${{inputs.suffix}},enable={{is_default_branch}}
             # tag event
-            type=ref,event=tag,enable={{is_default_flavor}}
-            type=ref,event=tag,suffix={{suffix}}
+            type=ref,event=tag,enable=${{inputs.is_default_flavor}}
+            type=ref,event=tag,suffix=${{inputs.suffix}}
           images: |
             ghcr.io/${{ github.repository_owner }}/ts3server
             icedream/ts3server
