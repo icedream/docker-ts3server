@@ -25,9 +25,6 @@ on:
       dockerhub_token:
         description: Docker Hub token
         required: true
-      github_token:
-        description: GitHub token
-        required: true
 
 jobs:
   docker:
@@ -57,7 +54,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.github_token }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v3

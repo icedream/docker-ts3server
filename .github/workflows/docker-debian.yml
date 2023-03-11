@@ -17,6 +17,5 @@ jobs:
       suffix: -debian
       is_default_flavor: true
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
       dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}

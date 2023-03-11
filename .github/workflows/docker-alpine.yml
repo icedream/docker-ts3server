@@ -17,6 +17,5 @@ jobs:
       suffix: -alpine
       is_default_flavor: false
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
       dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
