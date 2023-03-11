@@ -1,0 +1,18 @@
+name: Alpine Docker image build
+
+on:
+  push:
+    branches:
+      - 'main'
+      - '[0-9]+'
+      - '[0-9]+.[0-9]+'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  docker:
+    uses: ./.github/workflows/docker.yml
+    with:
+      dockerfile: alpine.Dockerfile
+      suffix: -alpine
+      is_default_flavor: false

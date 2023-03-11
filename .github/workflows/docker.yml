@@ -1,13 +1,23 @@
 name: Docker image build
 
 on:
-  push:
-    branches:
-      - 'main'
-      - '[0-9]+'
-      - '[0-9]+.[0-9]+'
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_call:
+    inputs:
+      is_default_flavor:
+        required: false
+        type: bool
+        description: |
+          Whether this flavor becomes the default. Suffixless tags will be
+          added if set to true.
+      suffix:
+        required: true
+        type: string
+        description: A suffix to append to the image tag.
+      dockerfile:
+        required: false
+        type: string
+        default: Dockerfile
+        description: Path to Dockerfile to build image from.
 
 jobs:
   docker:
@@ -44,11 +54,14 @@ jobs:
         with:
           tags: |
             # branch event
-            type=ref,event=branch
+            type=ref,event=branch,enable={{is_default_flavor}}
+            type=ref,event=branch,suffix={{suffix}}
             # set latest tag for main branch
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest,enable=${{ is_default_branch && is_default_flavor }}
+            type=raw,value=latest,suffix={{suffix}},enable={{is_default_branch}}
             # tag event
-            type=ref,event=tag
+            type=ref,event=tag,enable={{is_default_flavor}}
+            type=ref,event=tag,suffix={{suffix}}
           images: |
             ghcr.io/${{ github.repository_owner }}/ts3server
             icedream/ts3server
@@ -57,6 +70,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
+          file: {{dockerfile}}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
