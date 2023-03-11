@@ -18,6 +18,16 @@ on:
         type: string
         default: Dockerfile
         description: Path to Dockerfile to build image from.
+    secrets:
+      dockerhub_username:
+        description: Docker Hub username
+        required: true
+      dockerhub_token:
+        description: Docker Hub token
+        required: true
+      github_token:
+        description: GitHub token
+        required: true
 
 jobs:
   docker:
@@ -40,14 +50,14 @@ jobs:
         name: Log in to DockerHub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.dockerhub_username }}
+          password: ${{ secrets.dockerhub_token }}
       - name: Log in to GitHub container registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.github_token }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v3
