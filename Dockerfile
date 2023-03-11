@@ -5,7 +5,7 @@ RUN chmod +x /target/usr/local/bin/*
 
 ###
 
-FROM debian:10
+FROM debian:11
 
 # Add "app" user
 RUN mkdir -p /tmp/empty \
