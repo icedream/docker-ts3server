@@ -1,4 +1,4 @@
-name: Alpine Docker image build
+name: Debian Docker image build
 
 on:
   push:
