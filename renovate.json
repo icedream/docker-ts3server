@@ -15,7 +15,7 @@
 			],
 			"depNameTemplate": "teamspeak3-server",
 			"packageNameTemplate": "nix_unstable/teamspeak-server",
-			"datasourceTemplate": "repology",
+			"datasourceTemplate": "repology"
 		}
 	],
 	"packageRules": [
