@@ -90,8 +90,8 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: "true"
       - name: Sign images with cosign
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
+          COSIGN_EXPERIMENTAL: "true"
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
