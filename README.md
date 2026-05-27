@@ -2,6 +2,18 @@
 
 TeamSpeak3 server as a Docker image!
 
+## Image Signing
+
+```bash
+# Verify the signature of an image
+cosign verify icedream/ts3server
+
+# Verify an image from GitHub Container Registry
+cosign verify ghcr.io/icedream/docker-ts3server
+```
+
+For more information about image signing with Cosign, see the [Cosign documentation](https://docs.sigstore.dev/cosign/signing/overview).
+
 ## Usage
 
 This container has been preconfigured to store and access configuration and

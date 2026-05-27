@@ -33,6 +33,7 @@ jobs:
     permissions:
       packages: write
       contents: read
+      id-token: write
     steps:
       -
         name: Set up QEMU
@@ -81,3 +82,15 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v4.1.2
+        with:
+          cosign-release: 'v3.0.6'
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+      - name: Sign images with cosign
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
