@@ -1,0 +1,153 @@
+name: Check TeamSpeak 3 Server Version
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-version:
+    name: Check for TeamSpeak 3 server updates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v6
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch latest TeamSpeak server version
+        id: fetch-version
+        run: |
+          VERSION=$(curl -s https://www.teamspeak.com/en/downloads/ \
+            | grep -FC 5 'Server 64-bit' \
+            | grep -oP '[0-9]+\.[0-9]+\.[0-9]+' \
+            | sort -V | tail -1)
+
+          echo "Latest version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check current version in Dockerfiles
+        id: check-dockerfiles
+        run: |
+          DEBIAN_VERSION=$(grep '^ARG TS3SERVER_VERSION=' Dockerfile | sed -n 's/.*"\([^"]*\)".*/\1/p')
+          ALPINE_VERSION=$(grep '^ARG TS3SERVER_VERSION=' alpine.Dockerfile | sed -n 's/.*"\([^"]*\)".*/\1/p')
+
+          echo "Debian version: $DEBIAN_VERSION"
+          echo "Alpine version: $ALPINE_VERSION"
+
+          echo "debian_version=$DEBIAN_VERSION" >> $GITHUB_OUTPUT
+          echo "alpine_version=$ALPINE_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: compare
+        run: |
+          if [ "${{ steps.fetch-version.outputs.version }}" != "${{ steps.check-dockerfiles.outputs.debian_version }}" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "New version available!"
+            echo "Current: ${{ steps.check-dockerfiles.outputs.debian_version }}"
+            echo "Latest: ${{ steps.fetch-version.outputs.version }}"
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "Already up to date!"
+          fi
+        shell: bash
+
+      - name: Fetch checksums for new version
+        if: steps.compare.outputs.needs_update == 'true'
+        id: fetch-checksums
+        run: |
+          NEW_VERSION="${{ steps.fetch-version.outputs.version }}"
+          
+          # Fetch AMD64 checksum (used for Debian)
+          echo "Fetching AMD64 checksum..."
+          DEBIAN_SHA256=$(curl -sL https://files.teamspeak-services.com/releases/server/$NEW_VERSION/teamspeak3-server_linux_amd64-$NEW_VERSION.tar.bz2 \
+            | sha256sum | awk '{print $1}')
+          
+          # For Alpine, try the alpine variant first, if it fails, use the AMD64
+          echo "Fetching Alpine checksum..."
+          ALPINE_SHA256=$(curl -sL https://files.teamspeak-services.com/releases/server/$NEW_VERSION/teamspeak3-server_linux_alpine-$NEW_VERSION.tar.bz2 \
+            2>/dev/null | sha256sum | awk '{print $1}' || echo "$DEBIAN_SHA256")
+          
+          # If Alpine fetch failed (returns only whitespace), use AMD64
+          if [ -z "$ALPINE_SHA256" ] || [ ${#ALPINE_SHA256} -lt 64 ]; then
+            ALPINE_SHA256="$DEBIAN_SHA256"
+          fi
+          
+          echo "Debian SHA256: $DEBIAN_SHA256"
+          echo "Alpine SHA256: $ALPINE_SHA256"
+          echo "debian_sha256=$DEBIAN_SHA256" >> $GITHUB_OUTPUT
+          echo "alpine_sha256=$ALPINE_SHA256" >> $GITHUB_OUTPUT
+
+      - name: Create feature branch
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          NEW_VERSION="${{ steps.fetch-version.outputs.version }}"
+          BRANCH_NAME="bump-ts3server-${NEW_VERSION}"
+          
+          git checkout -b "$BRANCH_NAME"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Update Dockerfiles
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          NEW_VERSION="${{ steps.fetch-version.outputs.version }}"
+          DEBIAN_SHA256="${{ steps.fetch-checksums.outputs.debian_sha256 }}"
+          ALPINE_SHA256="${{ steps.fetch-checksums.outputs.alpine_sha256 }}"
+          
+          # Update Dockerfile (Debian)
+          sed -i "s/ARG TS3SERVER_VERSION=\".*\"/ARG TS3SERVER_VERSION=\"$NEW_VERSION\"/" Dockerfile
+          sed -i "s/ARG TS3SERVER_SHA256=\".*\"/ARG TS3SERVER_SHA256=\"$DEBIAN_SHA256\"/" Dockerfile
+          
+          # Update alpine.Dockerfile
+          sed -i "s/ARG TS3SERVER_VERSION=\".*\"/ARG TS3SERVER_VERSION=\"$NEW_VERSION\"/" alpine.Dockerfile
+          sed -i "s/ARG TS3SERVER_SHA256=\".*\"/ARG TS3SERVER_SHA256=\"$ALPINE_SHA256\"/" alpine.Dockerfile
+
+      - name: Commit and push changes
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          NEW_VERSION="${{ steps.fetch-version.outputs.version }}"
+          
+          git add Dockerfile alpine.Dockerfile
+          git commit -m "Bump TeamSpeak 3 server to v$NEW_VERSION"
+          git push origin "$branch_name"
+
+      - name: Create pull request
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NEW_VERSION="${{ steps.fetch-version.outputs.version }}"
+          OLD_VERSION="${{ steps.check-dockerfiles.outputs.debian_version }}"
+          DEBIAN_SHA256="${{ steps.fetch-checksums.outputs.debian_sha256 }}"
+          ALPINE_SHA256="${{ steps.fetch-checksums.outputs.alpine_sha256 }}"
+
+          gh pr create \
+            --title "Bump TeamSpeak 3 server to v$NEW_VERSION" \
+            --body "Automated version update from v$OLD_VERSION to v$NEW_VERSION
+
+          **Changes:**
+          - Updated \`Dockerfile\`: TS3SERVER_VERSION to $NEW_VERSION
+          - Updated \`alpine.Dockerfile\`: TS3SERVER_VERSION to $NEW_VERSION
+          - Updated SHA256 checksums for both Dockerfiles
+
+          **Checksums verified:**
+          - Debian (AMD64): $DEBIAN_SHA256
+          - Alpine: $ALPINE_SHA256
+
+          ---
+          *Automated by GitHub Actions*" \
+            --base main \
+            --head "$branch_name"
