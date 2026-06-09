@@ -5,7 +5,7 @@ RUN chmod +x /target/usr/local/bin/*
 
 ###
 
-FROM alpine:3.23
+FROM alpine:3.24
 
 # Add "app" user
 RUN mkdir -p /tmp/empty \
