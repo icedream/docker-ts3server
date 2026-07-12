@@ -5,7 +5,7 @@ RUN chmod +x /target/usr/local/bin/*
 
 ###
 
-FROM debian:trixie-20260518
+FROM debian:13
 
 # Add "app" user
 RUN mkdir -p /tmp/empty \
